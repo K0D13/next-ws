@@ -77,7 +77,7 @@ function scoreRoute(routePath: string) {
 
   let score = 0;
   // Root path
-  if(parts.length === 0) score = Infinity;
+  if (parts.length === 0) score = Infinity;
   for (const part of parts) {
     // Optional catch-all
     if (part.startsWith('[[...')) score += -1;
