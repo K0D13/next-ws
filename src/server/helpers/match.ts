@@ -57,12 +57,35 @@ export function findMatchingRoute(
     ...nextServer.getAppPathRoutes(),
   };
 
-  let matchedRoute = undefined;
-  for (const [routePath, [filePath]] of Object.entries(appPathRoutes)) {
-    if (!routePath || !filePath) continue;
+  const sortedRoutes = Object.entries(appPathRoutes)
+    .filter(([routePath, file]) => routePath && file?.length)
+    .sort(([a], [b]) => scoreRoute(b) - scoreRoute(a));
+
+  for (const [routePath, [filePath]] of sortedRoutes) {
+    if (!filePath) continue;
     const realPath = `${basePath}${routePath}`;
     const routeParams = getRouteParams(realPath, requestPathname);
-    if (routeParams) matchedRoute = { filename: filePath, params: routeParams };
+    if (routeParams) {
+      return { filename: filePath, params: routeParams };
+    }
   }
-  return matchedRoute;
+  return undefined;
+}
+
+function scoreRoute(routePath: string) {
+  const parts = routePath.split('/').filter(Boolean);
+
+  let score = 0;
+  // Root path
+  if (parts.length === 0) score = Infinity;
+  for (const part of parts) {
+    // Optional catch-all
+    if (part.startsWith('[[...')) score += -1;
+    // Catch-all
+    else if (part.startsWith('[...')) score += 0;
+    else if (part.startsWith('[')) score += 2;
+    else score += 3;
+  }
+
+  return score + parts.length;
 }
