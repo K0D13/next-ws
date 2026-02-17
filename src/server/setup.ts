@@ -25,8 +25,14 @@ export function setupWebSocketServer(nextServer: NextNodeServer) {
   const wsServer = //
     useWebSocketServer(
       () =>
-        new (import_ws.WebSocketServer ||
-          (import_ws as typeof import_ws & { Server: typeof import_ws.WebSocketServer }).Server)({
+        new (
+          import_ws.WebSocketServer ||
+          (
+            import_ws as typeof import_ws & {
+              Server: typeof import_ws.WebSocketServer;
+            }
+          ).Server
+        )({
           noServer: true,
         }),
     );
