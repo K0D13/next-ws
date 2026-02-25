@@ -12,6 +12,10 @@ import {
   useWebSocketServer,
 } from './persistent.js';
 
+const WebSocketServer =
+  import_ws.WebSocketServer ||
+  (import_ws as { Server?: typeof import_ws.WebSocketServer }).Server;
+
 /**
  * Attach the WebSocket server to the HTTP server.
  * @param nextServer Next.js Node server instance
@@ -23,19 +27,7 @@ export function setupWebSocketServer(nextServer: NextNodeServer) {
   if (!httpServer)
     return logger.error('[next-ws] was not able to find the HTTP server');
   const wsServer = //
-    useWebSocketServer(
-      () =>
-        new (
-          import_ws.WebSocketServer ||
-          (
-            import_ws as typeof import_ws & {
-              Server: typeof import_ws.WebSocketServer;
-            }
-          ).Server
-        )({
-          noServer: true,
-        }),
-    );
+    useWebSocketServer(() => new WebSocketServer({ noServer: true }));
   const requestStorage = //
     useRequestStorage(() => new AsyncLocalStorage());
 
