@@ -1,5 +1,11 @@
 # next-ws
 
+## 2.1.17
+
+### Patch Changes
+
+- 7cd1d9d: Support ws CJS export and use Server when WebSocketServer is missing
+
 ## 2.1.16
 
 ### Patch Changes
