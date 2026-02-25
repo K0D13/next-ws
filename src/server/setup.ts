@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import * as logger from 'next/dist/build/output/log.js';
 import type NextNodeServer from 'next/dist/server/next-server.js';
-import { WebSocketServer } from 'ws';
+import * as import_ws from 'ws';
 import { findMatchingRoute } from './helpers/match.js';
 import { importRouteModule } from './helpers/module.js';
 import { toNextRequest } from './helpers/request.js';
@@ -23,7 +23,19 @@ export function setupWebSocketServer(nextServer: NextNodeServer) {
   if (!httpServer)
     return logger.error('[next-ws] was not able to find the HTTP server');
   const wsServer = //
-    useWebSocketServer(() => new WebSocketServer({ noServer: true }));
+    useWebSocketServer(
+      () =>
+        new (
+          import_ws.WebSocketServer ||
+          (
+            import_ws as typeof import_ws & {
+              Server: typeof import_ws.WebSocketServer;
+            }
+          ).Server
+        )({
+          noServer: true,
+        }),
+    );
   const requestStorage = //
     useRequestStorage(() => new AsyncLocalStorage());
 
