@@ -34,7 +34,7 @@ test.describe('Redis Adapter Multi-Instance', () => {
       return;
     }
 
-    instance1 = spawn('npm', ['run', 'dev'], {
+    instance1 = spawn('pnpm', ['run', 'dev'], {
       cwd: 'examples/redis-adapter',
       env: {
         ...process.env,
@@ -45,7 +45,7 @@ test.describe('Redis Adapter Multi-Instance', () => {
       stdio: 'pipe',
     });
 
-    instance2 = spawn('npm', ['run', 'dev'], {
+    instance2 = spawn('pnpm', ['run', 'dev'], {
       cwd: 'examples/redis-adapter',
       env: {
         ...process.env,

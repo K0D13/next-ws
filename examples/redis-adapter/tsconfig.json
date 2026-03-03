@@ -1,9 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig.json",
-
-  "include": ["app/**/*", ".next/types/**/*.ts"],
+  "include": [
+    "app/**/*",
+    ".next/instance-1/types/**/*.ts",
+    ".next/instance-1/dev/types/**/*.ts",
+    ".next/instance-2/types/**/*.ts",
+    ".next/instance-2/dev/types/**/*.ts"
+  ],
   "exclude": ["node_modules", ".next"],
-
   "compileOnSave": true,
   "compilerOptions": {
     "allowUnreachableCode": false,
@@ -17,7 +21,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
-
     "allowArbitraryExtensions": false,
     "allowImportingTsExtensions": false,
     "allowJs": true,
@@ -26,7 +29,6 @@
     "resolveJsonModule": true,
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,
-
     "declaration": true,
     "declarationMap": true,
     "importHelpers": false,
@@ -39,17 +41,18 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-
     "experimentalDecorators": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "target": "ES2022",
     "useDefineForClassFields": true,
     "skipLibCheck": true,
-
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "outDir": "./dist",
-
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "incremental": true
   }
 }
