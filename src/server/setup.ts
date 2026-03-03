@@ -96,7 +96,7 @@ export function setupWebSocketServer(
           routeClients.set(pathname, new Set());
 
           // Subscribe to adapter messages for this route
-          adapter.onMessage(pathname, (message: unknown) => {
+          await adapter.onMessage(pathname, (message: unknown) => {
             const clients = routeClients.get(pathname);
             if (!clients) return;
 

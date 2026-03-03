@@ -13,6 +13,15 @@ import { WebSocketServer } from 'ws';
 class RedisAdapter implements Adapter {
   private pub = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
   private sub = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+  private handlers = new Map<string, Set<(message: unknown) => void>>();
+
+  constructor() {
+    this.sub.on('message', (channel: string, msg: string) => {
+      const roomHandlers = this.handlers.get(channel);
+      if (!roomHandlers) return;
+      for (const handler of roomHandlers) handler(msg);
+    });
+  }
 
   async broadcast(room: string, message: unknown): Promise<void> {
     const messageStr =
@@ -24,11 +33,15 @@ class RedisAdapter implements Adapter {
     await this.pub.publish(room, messageStr);
   }
 
-  onMessage(room: string, handler: (message: unknown) => void): void {
-    this.sub.subscribe(room);
-    this.sub.on('message', (channel: string, msg: string) => {
-      if (channel === room) handler(msg);
-    });
+  async onMessage(
+    room: string,
+    handler: (message: unknown) => void,
+  ): Promise<void> {
+    if (!this.handlers.has(room)) {
+      this.handlers.set(room, new Set());
+      await this.sub.subscribe(room);
+    }
+    this.handlers.get(room)!.add(handler);
   }
 
   async close(): Promise<void> {
@@ -52,8 +65,16 @@ app.prepare().then(() => {
   httpServer
     .on('request', async (req, res) => {
       if (!req.url) return;
-      const parsedUrl = parse(req.url, true);
-      await handle(req, res, parsedUrl);
+      try {
+        const parsedUrl = parse(req.url, true);
+        await handle(req, res, parsedUrl);
+      } catch (err) {
+        console.error('[next-ws] request handler error:', err);
+        if (!res.headersSent) {
+          res.statusCode = 500;
+          res.end('Internal Server Error');
+        }
+      }
     })
     .listen(port, () => {
       console.log(

@@ -12,7 +12,7 @@
  *     await this.pub.publish(room, JSON.stringify(message));
  *   }
  *
- *   onMessage(room: string, handler: (message: unknown) => void): void {
+ *   async onMessage(room: string, handler: (message: unknown) => void): Promise<void> {
  *     this.sub.subscribe(room);
  *     this.sub.on('message', (channel, msg) => {
  *       if (channel === room) handler(JSON.parse(msg));
@@ -38,7 +38,7 @@ export interface Adapter {
    * @param room Room identifier to subscribe to
    * @param handler Callback invoked when messages arrive for this room
    */
-  onMessage(room: string, handler: (message: unknown) => void): void;
+  onMessage(room: string, handler: (message: unknown) => void): void | Promise<void>;
 
   /**
    * Clean up adapter resources (close connections, unsubscribe, etc.)
